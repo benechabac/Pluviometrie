@@ -111,14 +111,14 @@ class RequestHandler(http.server.SimpleHTTPRequestHandler):
         regions = [("Rhône Alpes","blue"), ("Auvergne","green"), ("Auvergne-Rhône Alpes","cyan"), ('Bourgogne',"red"), 
                    ('Franche Comté','orange'), ('Bourgogne-Franche Comté','olive') ]
     else:
-        # On teste que la région demandée existe bien
-        c.execute("SELECT DISTINCT Région FROM 'regularite-mensuelle-ter'")
+        # On teste que la station demandée existe bien
+        c.execute("SELECT DISTINCT nom FROM 'stations-pluvio-2018'")
         reg = c.fetchall()
         if (self.path_info[1],) in reg:   # Rq: reg est une liste de tuples
           regions = [(self.path_info[1],"blue")]
         else:
             print ('Erreur nom')
-            self.send_error(404)    # Région non trouvée -> erreur 404
+            self.send_error(404)    # Station non trouvée -> erreur 404
             return None
     
     # configuration du tracé
