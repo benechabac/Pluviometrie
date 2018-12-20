@@ -1,6 +1,3 @@
-# regularite-TER.py
-# Correpond au corrigé du dernier exercice du TD3+4 (TD3-s7.py)
-
 import http.server
 import socketserver
 from urllib.parse import urlparse, parse_qs, unquote
