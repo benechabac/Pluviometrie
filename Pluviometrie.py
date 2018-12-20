@@ -26,7 +26,7 @@ class RequestHandler(http.server.SimpleHTTPRequestHandler):
     self.init_params()
 
     # le chemin d'accès commence par /stations
-    elif self.path_info[0] == 'stations':
+    if self.path_info[0] == 'stations':
       self.send_stations()
       
     # le chemin d'accès commence par /ponctualite
