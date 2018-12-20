@@ -28,11 +28,7 @@ class RequestHandler(http.server.SimpleHTTPRequestHandler):
     # On récupère les étapes du chemin d'accès
     self.init_params()
 
-    # le chemin d'accès commence par /time
-    if self.path_info[0] == 'time':
-      self.send_time()
-   
-     # le chemin d'accès commence par /regions
+    # le chemin d'accès commence par /stations
     elif self.path_info[0] == 'stations':
       self.send_stations()
       
@@ -90,27 +86,6 @@ class RequestHandler(http.server.SimpleHTTPRequestHandler):
     print('body =',length,ctype,self.body)
     print('params =', self.params)
     
-  #
-  # On envoie un document avec l'heure
-  #
-  def send_time(self):
-    
-    # on récupère l'heure
-    time = self.date_time_string()
-
-    # on génère un document au format html
-    body = '<!doctype html>' + \
-           '<meta charset="utf-8">' + \
-           '<title>l\'heure</title>' + \
-           '<div>Voici l\'heure du serveur :</div>' + \
-           '<pre>{}</pre>'.format(time)
-
-    # pour prévenir qu'il s'agit d'une ressource au format html
-    headers = [('Content-Type','text/html;charset=utf-8')]
-
-    # on envoie
-    self.send(body,headers)
-
   #
   # On génère et on renvoie la liste des régions et leur coordonnées (version TD3)
   #
