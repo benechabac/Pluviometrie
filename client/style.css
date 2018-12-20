@@ -1,6 +1,6 @@
-﻿/* fond de page */
+/* fond de page */
 body {
-  background-image: linear-gradient(0deg, slateblue, black, black);
+  background-image: url(pluie.jpg);
   background-size: 100%;
   background-repeat: no-repeat;
   color: white;
@@ -13,14 +13,14 @@ body {
 
 /* bandeau de titre */
 h1 { 
-  color: white;
+  color: blue;
   border: none;
   box-shadow: none;
-  background-color: rgba(255,255,255,0.3);
+  background-color: rgba(0,255,255,0.3);
   border-top: 3px solid rgba(255,255,255,0.6);
   border-bottom: 3px solid rgba(255,255,255,0.6);
   margin-top: 1.33em;
-  text-shadow: 3px 3px 3px black;
+  text-shadow: 1px 1px 1px white;
   padding-top: 0.5em;
   padding-bottom: 0.5em;
   margin-bottom: 1.33em;
@@ -30,7 +30,7 @@ h1 {
 body > * {   padding-left: 10px; }
 
 /* polices de caractères */
-body { font-family: Trebuchet MS, sans-serif; }
+body { font-family: Georgia, sans-serif; }
 
 /* positionnement des champs */
 label { display: block; }
