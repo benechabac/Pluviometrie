@@ -44,7 +44,7 @@ function load_data () {
       // boucle sur les enregistrements renvoyés
       for ( n = 0; n < data.length; n++ ) {
         // insertion d'un marqueur à la position, attachement d'une popup, capture de l'évènement "clic'
-	    L.marker([data[n].lat,data[n].lon]).addTo(map)
+	    L.marker([data[n].X,data[n].Y]).addTo(map)
           .bindPopup(data[n].nom)
 		  .addEventListener('click',OnMarkerClick)
 		  .idreg=data[n].nom;   // propriété personnalisée ajouté au marqueur
