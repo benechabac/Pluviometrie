@@ -30,7 +30,7 @@
 
 <script>
 // Creation d'une carte dans la balise div "map", et positionne la vue sur un point donné et un niveau de zoom
-var map = L.map('map').setView([45.76,4.83], 12);
+var map = L.map('map').setView([45.76,4.83], 10);
 // Ajout d'une couche de dalles OpenStreetMap
 L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
      attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
@@ -44,7 +44,7 @@ function load_data () {
       // boucle sur les enregistrements renvoyés
       for ( n = 0; n < data.length; n++ ) {
         // insertion d'un marqueur à la position, attachement d'une popup, capture de l'évènement "clic'
-	    L.marker([data[n].X,data[n].Y]).addTo(map)
+	    L.marker([data[n].Y,data[n].X]).addTo(map)
           .bindPopup(data[n].nom)
 		  .addEventListener('click',OnMarkerClick);   // propriété personnalisée ajouté au marqueur
 	    }
