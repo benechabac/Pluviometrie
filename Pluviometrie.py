@@ -123,7 +123,7 @@ class RequestHandler(http.server.SimpleHTTPRequestHandler):
     r = c.fetchall()
     
     headers = [('Content-Type','application/json')];
-    body = json.dumps([{'nom':n, 'lat':lat, 'lon': lon} for (n,lat,lon) in r])
+    body = json.dumps([{'X':X, 'Y':Y, 'Z': Z, 'nom':nom, 'adresse':adresse,'proprietai':proprietai,'datemisens':datemisens,'datemishor':datemishor,'zsol':zsol,'appartenan':appartenan,'identifian':identifian,'gid':gid} for (X,Y,Z,nom,adresse,proprietai,datemisens,datemishor,zsol,appartenan,identifian,gid) in r])
     self.send(body,headers)
 
   #
@@ -131,7 +131,7 @@ class RequestHandler(http.server.SimpleHTTPRequestHandler):
   #
   def send_ponctualite(self):
 
-    conn = sqlite3.connect('ter.sqlite')
+    conn = sqlite3.connect('historique-pluviometrie.sqlite')
     c = conn.cursor()
     
     if len(self.path_info) <= 1 or self.path_info[1] == '' :   # pas de paramètre => liste par défaut
