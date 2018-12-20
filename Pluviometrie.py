@@ -116,10 +116,10 @@ class RequestHandler(http.server.SimpleHTTPRequestHandler):
   #
   def send_regions(self):
 
-    conn = sqlite3.connect('ter.sqlite')
+    conn = sqlite3.connect('stations.sqlite')
     c = conn.cursor()
     
-    c.execute("SELECT * FROM 'regions'")
+    c.execute("SELECT * FROM 'stations-pluvio-2018'")
     r = c.fetchall()
     
     headers = [('Content-Type','application/json')];
