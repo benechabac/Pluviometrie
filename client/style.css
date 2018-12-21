@@ -14,16 +14,16 @@ body {
 /* bandeau de titre */
 h1 { 
   color: blue;
+  text-shadow: 1px 1px 1px white;
   border: none;
   box-shadow: none;
   background-color: rgba(0,255,255,0.3);
   border-top: 3px solid rgba(255,255,255,0.6);
   border-bottom: 3px solid rgba(255,255,255,0.6);
-  margin-top: 1.33em;
-  text-shadow: 1px 1px 1px white;
-  padding-top: 0.5em;
-  padding-bottom: 0.5em;
-  margin-bottom: 1.33em;
+  margin-top: 0.8em;
+  margin-bottom: 0.8em;
+  padding-top: 0.4em;
+  padding-bottom: 0.4em;
 }
 
 /* contenu de la page */
@@ -69,4 +69,3 @@ a {
 a.delete:hover {
   color: red;
 }
-#map { height: 400px; width: 600px; }
