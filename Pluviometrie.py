@@ -30,8 +30,8 @@ class RequestHandler(http.server.SimpleHTTPRequestHandler):
       self.send_stations()
       
     # le chemin d'accès commence par /ponctualite
-    elif self.path_info[0] == 'ponctualite':
-      self.send_ponctualite()
+    elif self.path_info[0] == 'pluies':
+      self.send_pluies()
       
     # ou pas...
     else:
@@ -84,47 +84,44 @@ class RequestHandler(http.server.SimpleHTTPRequestHandler):
     print('params =', self.params)
     
   #
-  # On génère et on renvoie la liste des régions et leur coordonnées (version TD3)
+  # On génère et on renvoie la liste des stations et leur coordonnées (version TD3)
   #
   def send_stations(self):
 
-    conn = sqlite3.connect('stations.sqlite')
+    conn = sqlite3.connect('pluvio.sqlite')
     c = conn.cursor()
     
     c.execute("SELECT * FROM 'stations-pluvio-2018'")
     r = c.fetchall()
     
-    headers = [('Content-Type','application/json')];
-    body = json.dumps([{'X':X, 'Y':Y, 'Z': Z, 'nom':nom, 'adresse':adresse,'proprietai':proprietai,'datemisens':datemisens,'datemishor':datemishor,'zsol':zsol,'appartenan':appartenan,'identifian':identifian,'gid':gid} for (X,Y,Z,nom,adresse,proprietai,datemisens,datemishor,zsol,appartenan,identifian,gid) in r])
+    headers = [('Content-Type','application/json')]
+    #body = json.dumps([{'X':X, 'Y':Y, 'Z': Z, 'nom':nom, 'adresse':adresse,'proprietai':proprietai,'datemisens':datemisens,'datemishor':datemishor,'zsol':zsol,'appartenan':appartenan, 'identifian':identifian, 'gid':gid} for (X,Y,Z,nom,adresse,proprietai,datemisens,datemishor,zsol,appartenan,identifian,gid) in r])
+    body = json.dumps([{'nom':nom, 'long':X, 'lat':Y} for (X,Y,Z,nom,adresse,proprietai,datemisens,datemishor,zsol,appartenan,identifian,gid) in r])
     self.send(body,headers)
 
   #
-  # On génère et on renvoie un graphique de ponctualite (cf. TD1)
+  # On génère et on renvoie un graphique de l'historique des pluies (cf. TD1)
   #
-  def send_ponctualite(self):
+  def send_pluies(self):
 
-    conn = sqlite3.connect('historique-pluviometrie.sqlite')
+    conn = sqlite3.connect('pluvio.sqlite')
     c = conn.cursor()
     
-    if len(self.path_info) <= 1 or self.path_info[1] == '' :   # pas de paramètre => liste par défaut
-        # Definition des régions et des couleurs de tracé
-        regions = [("Rhône Alpes","blue"), ("Auvergne","green"), ("Auvergne-Rhône Alpes","cyan"), ('Bourgogne',"red"), 
-                   ('Franche Comté','orange'), ('Bourgogne-Franche Comté','olive') ]
+    # On teste que la station demandée existe bien
+    c.execute("SELECT identifian FROM 'stations-pluvio-2018' WHERE nom=?", (self.path_info[1],))
+    reg = c.fetchall()
+    if len(reg)==0:
+        print ('Erreur nom')
+        self.send_error(404)    # Station non trouvée -> erreur 404
+        return None
     else:
-        # On teste que la station demandée existe bien
-        c.execute("SELECT DISTINCT nom FROM 'stations-pluvio-2018'")
-        reg = c.fetchall()
-        if (self.path_info[1],) in reg:   # Rq: reg est une liste de tuples
-          regions = [(self.path_info[1],"blue")]
-        else:
-            print ('Erreur nom')
-            self.send_error(404)    # Station non trouvée -> erreur 404
-            return None
+        sid = reg[0][0] # identifiant de la station
+
     
     # configuration du tracé
-    fig1 = plt.figure(figsize=(18,6))
+    fig1 = plt.figure(figsize=(18,9))
     ax = fig1.add_subplot(111)
-    ax.set_ylim(bottom=80,top=100)
+    ax.set_ylim(bottom=0,top=250)
     ax.grid(which='major', color='#888888', linestyle='-')
     ax.grid(which='minor',axis='x', color='#888888', linestyle=':')
     ax.xaxis.set_major_locator(pltd.YearLocator())
@@ -132,33 +129,35 @@ class RequestHandler(http.server.SimpleHTTPRequestHandler):
     ax.xaxis.set_major_formatter(pltd.DateFormatter('%B %Y'))
     ax.xaxis.set_tick_params(labelsize=10)
     ax.xaxis.set_label_text("Date")
-    ax.yaxis.set_label_text("% de régularité")
+    ax.yaxis.set_label_text("Hauteur de pluie mesurée (en mm)")
             
-    # boucle sur les régions
-    for l in (regions) :
-        c.execute("SELECT * FROM 'regularite-mensuelle-ter' WHERE Région=? ORDER BY Date",l[:1])  # ou (l[0],)
-        r = c.fetchall()
-        # recupération de la date (colonne 2) et transformation dans le format de pyplot
-        x = [pltd.date2num(dt.date(int(a[1][:4]),int(a[1][5:]),1)) for a in r if not a[7] == '']
-        # récupération de la régularité (colonne 8)
-        y = [float(a[7]) for a in r if not a[7] == '']
-        # tracé de la courbe
-        plt.plot(x,y,linewidth=1, linestyle='-', marker='o', color=l[1], label=l[0])
+    sta = "sta-"+sid 
+    # recupération de la date (mois-annee) et de la hauteur pour cette date
+    c.execute("SELECT SUBSTR(date,4,7) AS mois,SUM(`"+sta+"`) FROM 'pluvio-histo-2018' WHERE `"+sta+"_e`!='*' GROUP BY mois")
+    r = c.fetchall()
+    # recupération de la date (colonne 1) et transformation dans le format de pyplot
+    x = [pltd.date2num(dt.date(int(a[0][3:7]),int(a[0][:2]),1)) for a in r]
+    # récupération de la hauteur (colonne 2)
+    y = [ ( 0.0 if a[1]=='' else float(a[1]) ) for a in r]
+    # trie selon date
+    x,y = zip(*sorted(zip(x, y)))
+    # tracé de la courbe
+    plt.plot(x,y,linewidth=1, linestyle='-', marker='o', color='blue', label=self.path_info[1])
         
     # légendes
     plt.legend(loc='lower left')
-    plt.title('Régularité des TER (en %)',fontsize=16)
+    plt.title('Pluviométrie',fontsize=16)
 
     # génération des courbes dans un fichier PNG
-    fichier = 'courbes/ponctualite_'+self.path_info[1] +'.png'
+    fichier = 'courbes/pluies_'+self.path_info[1] +'.png'
     plt.savefig('client/{}'.format(fichier))
     plt.close()
     
-    #html = '<img src="/{}?{}" alt="ponctualite {}" width="100%">'.format(fichier,self.date_time_string(),self.path)
     body = json.dumps({
-            'title': 'Régularité TER '+self.path_info[1], \
+            'title': 'Pluviométrie '+self.path_info[1], \
             'img': '/'+fichier \
              });
+
     # on envoie
     headers = [('Content-Type','application/json')];
     self.send(body,headers)

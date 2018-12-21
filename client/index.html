@@ -9,7 +9,7 @@
 <meta charset="utf-8">
 
 <style>
-#map { height: 780px; width: 600px; float:left; margin-left:20px; margin-right:20px;}
+#map { height: 780px; width: 550px; float:left; margin-left:20px; margin-right:20px;}
 </style>
 
 <body onload="load_data()">  <!-- Récupération des données avec le chargement de la page -->
@@ -22,7 +22,7 @@
 
 <div id="reponse">
   <p align="center"></p>
-  <img width="70%" src="" />
+  <img width="68%" src="" />
 </div>
 <div>
 </div>
@@ -44,10 +44,11 @@ function load_data () {
       // boucle sur les enregistrements renvoyés
       for ( n = 0; n < data.length; n++ ) {
         // insertion d'un marqueur à la position, attachement d'une popup, capture de l'évènement "clic'
-	    L.marker([data[n].Y,data[n].X]).addTo(map)
-          .bindPopup(data[n].nom)
-		  .addEventListener('click',OnMarkerClick);   // propriété personnalisée ajouté au marqueur
-	    }
+	L.marker([data[n].lat,data[n].long]).addTo(map)
+	  .bindPopup(data[n].nom)
+	  .addEventListener('click',OnMarkerClick)   // propriété personnalisée ajouté au marqueur
+	  .nom=data[n].nom;
+      }
     };
     xhr.open('GET','/stations',true);
     xhr.send();
@@ -55,15 +56,15 @@ function load_data () {
 
 function OnMarkerClick (e) {
     var xhr = new XMLHttpRequest();
-	var image =  document.querySelector('#reponse img'),
-        legende = document.querySelector('#reponse p');
-	xhr.onload = function() {   // fonction callback
-      var data = JSON.parse(this.responseText)
-      image.src = data.img;
-      image.alt = data.title;
-      legende.innerHTML = data.title;
-      };
-    xhr.open('GET','/ponctualite/'+e.target.idreg,true);  // on récupère la courbe par un appel au serveur
+    var image =  document.querySelector('#reponse img'),
+	legende = document.querySelector('#reponse p');
+    xhr.onload = function() {   // fonction callback
+	var data = JSON.parse(this.responseText)
+	image.src = data.img;
+	image.alt = data.title;
+	legende.innerHTML = data.title;
+    };
+    xhr.open('GET','/pluies/'+e.target.nom,true);  // on récupère la courbe par un appel au serveur
     xhr.send();
 }
 </script>
