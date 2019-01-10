@@ -29,7 +29,7 @@ class RequestHandler(http.server.SimpleHTTPRequestHandler):
     if self.path_info[0] == 'stations':
       self.send_stations()
       
-    # le chemin d'accès commence par /ponctualite
+    # le chemin d'accès commence par /pluies
     elif self.path_info[0] == 'pluies':
       self.send_pluies()
       
