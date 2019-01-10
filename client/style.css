@@ -37,6 +37,17 @@ body { font-family: Georgia, sans-serif; }
 label { display: block; }
 label span { display: inline-block; width: 5em; height: 1.5em; }
 
+form[name=Dates] {
+    display: inline-block;
+}
+#reponse {
+    display: inline-block;
+    width: 60%;
+}
+#reponse img {
+    width: 100%;
+}
+
 /*
 input, textarea {
   font-family: monospace;
