@@ -23,7 +23,8 @@
 <div id="map"></div>  
 
 <FORM>
-<SELECT name="Date_debut" size="1">
+<SELECT id="Date_debut" size="7">
+<label> for="Date_debut">Date de début :</label>
 <OPTION>2011
 <OPTION>2012
 <OPTION>2013
@@ -32,7 +33,9 @@
 <OPTION>2016
 <OPTION>2017
 </SELECT>
-<SELECT name="Date_fin" size="1">
+
+<SELECT id="Date_fin" size="7">
+<label> for="Date_debut">Date de début :</label>
 <OPTION>2011
 <OPTION>2012
 <OPTION>2013
@@ -41,7 +44,6 @@
 <OPTION>2016
 <OPTION>2017
 </SELECT>
-</FORM>
 
 <div id="reponse">
   <p align="center"></p>
@@ -55,6 +57,8 @@
         <button type="submit">Ok</button>
 </div>
 </body>
+
+</FORM>
 
 <script>
 // Creation d'une carte dans la balise div "map", et positionne la vue sur un point donné et un niveau de zoom
