@@ -146,7 +146,7 @@ class RequestHandler(http.server.SimpleHTTPRequestHandler):
         
     # légendes
     plt.legend(loc='lower left')
-    plt.title('Pluviométrie',fontsize=16)
+    plt.title('Pluviométrie '+self.path_info[1],fontsize=16)
 
     # génération des courbes dans un fichier PNG
     fichier = 'courbes/pluies_'+self.path_info[1] +'.png'
