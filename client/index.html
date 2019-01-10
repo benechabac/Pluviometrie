@@ -22,9 +22,9 @@
 
 <div id="map"></div>  
 
-<FORM name=Dates methode="POST">
+<FORM name=Dates>
 Date de début : 
-<label>2011 : <input type="radio" name="Date_debut" value="2011"></label>
+<label>2011 : <input checked type="radio" name="Date_debut" value="2011"></label>
 <label>2012 : <input type="radio" name="Date_debut" value="2012"></label>
 <label>2013 : <input type="radio" name="Date_debut" value="2013"></label>
 <label>2014 : <input type="radio" name="Date_debut" value="2014"></label>
@@ -39,7 +39,7 @@ Date de fin :
 <label>2015 : <input type="radio" name="Date_fin" value="2015"></label>
 <label>2016 : <input type="radio" name="Date_fin" value="2016"></label>
 <label>2017 : <input type="radio" name="Date_fin" value="2017"></label>
-<label>2018 : <input type="radio" name="Date_fin" value="2018"></label>
+<label>2018 : <input checked type="radio" name="Date_fin" value="2018"></label>
 
 <input type="submit" value ="Ok">
 
@@ -82,13 +82,25 @@ function OnMarkerClick (e) {
     var xhr = new XMLHttpRequest();
     var image =  document.querySelector('#reponse img'),
 	legende = document.querySelector('#reponse p');
+    var debut = '';
+    for (i=0; i<document.Dates.Date_debut.length; i++) {
+	    if (document.Dates.Date_debut[i].checked) {
+		    debut = document.Dates.Date_debut[i].value;
+	    }
+    }
+    var fin = '';
+    for (i=0; i<document.Dates.Date_fin.length; i++) {
+	    if (document.Dates.Date_fin[i].checked) {
+		    fin = document.Dates.Date_fin[i].value;
+	    }
+    }
     xhr.onload = function() {   // fonction callback
 	var data = JSON.parse(this.responseText)
 	image.src = data.img;
 	image.alt = data.title;
 	legende.innerHTML = data.title;
     };
-    xhr.open('GET','/pluies/'+e.target.nom,true);  // on récupère la courbe par un appel au serveur
+    xhr.open('GET','/pluies/'+e.target.nom+'/'+debut+'/'+fin,true);  // on récupère la courbe par un appel au serveur
     xhr.send();
 }
 </script>

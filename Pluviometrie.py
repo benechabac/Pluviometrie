@@ -103,6 +103,12 @@ class RequestHandler(http.server.SimpleHTTPRequestHandler):
   # On génère et on renvoie un graphique de l'historique des pluies (cf. TD1)
   #
   def send_pluies(self):
+    if len(self.path_info)>3:
+        debut = int(self.path_info[2])
+        fin = int(self.path_info[3])
+    else:
+        debut = 2011
+        fin = 2018
 
     conn = sqlite3.connect('pluvio.sqlite')
     c = conn.cursor()
@@ -136,9 +142,9 @@ class RequestHandler(http.server.SimpleHTTPRequestHandler):
     c.execute("SELECT SUBSTR(date,4,7) AS mois,SUM(`"+sta+"`) FROM 'pluvio-histo-2018' WHERE `"+sta+"_e`!='*' GROUP BY mois")
     r = c.fetchall()
     # recupération de la date (colonne 1) et transformation dans le format de pyplot
-    x = [pltd.date2num(dt.date(int(a[0][3:7]),int(a[0][:2]),1)) for a in r]
+    x = [pltd.date2num(dt.date(int(a[0][3:7]),int(a[0][:2]),1)) for a in r if int(a[0][3:7])>=debut and int(a[0][3:7])<=fin]
     # récupération de la hauteur (colonne 2)
-    y = [ ( 0.0 if a[1]=='' else float(a[1]) ) for a in r]
+    y = [ ( 0.0 if a[1]=='' else float(a[1]) ) for a in r if int(a[0][3:7])>=debut and int(a[0][3:7])<=fin]
     # trie selon date
     x,y = zip(*sorted(zip(x, y)))
     # tracé de la courbe
@@ -149,7 +155,7 @@ class RequestHandler(http.server.SimpleHTTPRequestHandler):
     plt.title('Pluviométrie '+self.path_info[1],fontsize=16)
 
     # génération des courbes dans un fichier PNG
-    fichier = 'courbes/pluies_'+self.path_info[1] +'.png'
+    fichier = 'courbes/pluies_'+self.path_info[1]+'_'+str(debut)+'_'+str(fin)+'.png'
     plt.savefig('client/{}'.format(fichier))
     plt.close()
     
