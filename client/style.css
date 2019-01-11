@@ -23,12 +23,11 @@ h1 {
   border-radius: 8px;
   margin-top: 0.8em;
   margin-bottom: 0.8em;
+  margin-left: 20px;
   padding-top: 0.4em;
   padding-bottom: 0.4em;
   height: 50px;
   width: 95%;
-  position:relative;
-  left: 10px;
 }
 
 /* contenu de la page */
@@ -65,7 +64,7 @@ input[type=button]{
   border: 5px;
   border-color: rgba(37,87,233,0.6);
   border-radius: 10px;
-  margin: 3px 
+  margin: 3px; 
   height: 30px;
   font-size: 16px;
   color:rgb(26,14,117)

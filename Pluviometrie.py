@@ -287,6 +287,11 @@ class RequestHandler(http.server.SimpleHTTPRequestHandler):
             'title': '', \
             'img': '/'+fichier \
              });
+    
+    data = {"Station" : self.path_info[1] , "Debut" : debut, "Fin" : fin}
+    c.execute("""INSERT INTO Cache(Station, Debut, Fin) VALUES(:Station, :Debut, :Fin)""", data)
+    
+    conn.commit()
 
     # on envoie
     headers = [('Content-Type','application/json')];
