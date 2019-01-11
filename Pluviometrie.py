@@ -184,6 +184,9 @@ class RequestHandler(http.server.SimpleHTTPRequestHandler):
     self.send(body,headers)
 
 
+  #
+  # On génère et on renvoie un graphique de l'historique comparer des pluies 
+  #
   def send_compare(self):
     if len(self.path_info)>4:
         debut = int(self.path_info[3])
@@ -246,7 +249,7 @@ class RequestHandler(http.server.SimpleHTTPRequestHandler):
     c.execute("SELECT SUBSTR(date,4,7) AS mois,SUM(`"+sta1+"`) FROM 'pluvio-histo-2018' WHERE`"+sta1+"_e`!='*' GROUP BY mois")
     r = c.fetchall()
     # recupération de la date (colonne 1) et transformation dans le format de pyplot
-    x = [pltd.date2num(dt.date(int(a[0][3:7]),int(a[0][:2]),1)) for a in r if int(a[0][3:7])>=debut and int(a[0][3:7])<=fin]
+    x1 = [pltd.date2num(dt.date(int(a[0][3:7]),int(a[0][:2]),1)) for a in r if int(a[0][3:7])>=debut and int(a[0][3:7])<=fin]
     # récupération de la hauteur (colonne 2)
     y1 = [ ( 0.0 if a[1]=='' else float(a[1]) ) for a in r if int(a[0][3:7])>=debut and int(a[0][3:7])<=fin]
 
@@ -254,16 +257,18 @@ class RequestHandler(http.server.SimpleHTTPRequestHandler):
     # recupération de la date (mois-annee) et de la hauteur pour cette date
     c.execute("SELECT SUBSTR(date,4,7) AS mois,SUM(`"+sta2+"`) FROM 'pluvio-histo-2018' WHERE `"+sta2+"_e`!='*' GROUP BY mois")
     r = c.fetchall()
+    # recupération de la date (colonne 1) et transformation dans le format de pyplot
+    x2 = [pltd.date2num(dt.date(int(a[0][3:7]),int(a[0][:2]),1)) for a in r if int(a[0][3:7])>=debut and int(a[0][3:7])<=fin]
     # récupération de la hauteur (colonne 2)
     y2 = [ ( 0.0 if a[1]=='' else float(a[1]) ) for a in r if int(a[0][3:7])>=debut and int(a[0][3:7])<=fin]
 
     # trie selon date
-    x,y1 = zip(*sorted(zip(x, y1)))
-    x,y2 = zip(*sorted(zip(x, y2)))
+    x1,y1 = zip(*sorted(zip(x1, y1)))
+    x2,y2 = zip(*sorted(zip(x2, y2)))
 
     # tracé de la courbe
-    plt.plot(x,y1,linewidth=1, linestyle='-', marker='o', color='blue', label=self.path_info[1])
-    plt.plot(x,y2,linewidth=1, linestyle='-', marker='o', color='red', label=self.path_info[2])
+    plt.plot(x1,y1,linewidth=1, linestyle='-', marker='o', color='blue', label=self.path_info[1])
+    plt.plot(x2,y2,linewidth=1, linestyle='-', marker='o', color='red', label=self.path_info[2])
         
     # légendes
     plt.legend(loc='lower left')
