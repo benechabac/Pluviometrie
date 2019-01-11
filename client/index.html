@@ -30,6 +30,7 @@
 
 <div id="map"></div>  
 
+
 <form name=Dates>
 <h2>Date de début :</h2>
 <label>2011 : <input checked type="radio" name="Date_debut" value="2011"></label>
@@ -50,8 +51,9 @@
 <label>2018 : <input checked type="radio" name="Date_fin" value="2018"></label>
 
 <h2>Comparer à une autre station :</h2>
+<div class="styled-select">
 <SELECT name="comparerStation" size="1">
-<OPTION>Ne comparer à aucune autre station
+<OPTION>Pas de comparaison
 <OPTION>JONAGE
 <OPTION>MEYZIEU
 <OPTION>GENAS
@@ -84,6 +86,7 @@
 <OPTION>SEREZIN
 <OPTION>GIVORS
 </SELECT>
+</div>
 
 <input type="button" onclick="updateGraph(2)" value="Comparer">	
 	
