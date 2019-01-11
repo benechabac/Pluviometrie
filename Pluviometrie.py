@@ -267,7 +267,7 @@ class RequestHandler(http.server.SimpleHTTPRequestHandler):
         
     # légendes
     plt.legend(loc='lower left')
-    plt.title('Pluviométrie '+self.path_info[1]+' et '+self.path_info[2],fontsize=16)
+    plt.title('Pluviométrie '+self.path_info[1]+' - '+self.path_info[2],fontsize=16)
 
     # génération des courbes dans un fichier PNG
     fichier = 'courbes/compare_'+self.path_info[1]+'_'+self.path_info[2]+'_'+str(debut)+'_'+str(fin)+'.png'
