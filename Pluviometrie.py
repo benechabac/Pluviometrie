@@ -130,7 +130,18 @@ class RequestHandler(http.server.SimpleHTTPRequestHandler):
     ax.set_ylim(bottom=0,top=250)
     ax.grid(which='major', color='#888888', linestyle='-')
     ax.grid(which='minor',axis='x', color='#888888', linestyle=':')
-    ax.xaxis.set_major_locator(pltd.YearLocator())
+    if fin==debut:
+        ax.xaxis.set_major_locator(pltd.MonthLocator())
+    elif fin-debut==1:
+        ax.xaxis.set_major_locator(pltd.MonthLocator(range(1,13,2)))
+    elif fin-debut==2:
+        ax.xaxis.set_major_locator(pltd.MonthLocator(range(1,13,3)))
+    elif fin-debut==3:
+        ax.xaxis.set_major_locator(pltd.MonthLocator(range(1,13,4)))
+    elif fin-debut<=5:
+        ax.xaxis.set_major_locator(pltd.MonthLocator(range(1,13,6)))
+    else:
+        ax.xaxis.set_major_locator(pltd.YearLocator())
     ax.xaxis.set_minor_locator(pltd.MonthLocator())
     ax.xaxis.set_major_formatter(pltd.DateFormatter('%B %Y'))
     ax.xaxis.set_tick_params(labelsize=10)
