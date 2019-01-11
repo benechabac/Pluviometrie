@@ -40,6 +40,7 @@ label span { display: inline-block; width: 5em; height: 1.5em; }
 form[name=Dates] {
   color: mediumblue;
   box-shadow: none;
+  overflow: auto;
   background-color: rgba(255,255,255,0.3);
   height:75%;
   width:13%;
