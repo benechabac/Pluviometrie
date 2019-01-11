@@ -128,8 +128,8 @@ function load_data () {
     xhr.send();
 }
 
-var marker; // sauvegarde du marker selectionne
-var compare = false;
+var marker;		// sauvegarde du marker selectionne
+var compare = false;	// booleen permettant de se souvenir si l'on fait une comparaison ou non
 // si on clique sur un marker la courbe change
 function OnMarkerClick (e) {
     marker = e.target;
