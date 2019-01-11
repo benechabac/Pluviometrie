@@ -56,6 +56,17 @@ h2{
   color:mediumblue;
 }
 
+select{
+  border: 2px;
+  border-color: mediumblue
+}
+input{
+  background-color: lightgrey;
+  border-radius: 8px;
+  border: 2px;
+  border-color: mediumblue
+}
+
 #reponse {
     display: inline-block;
     width: 52%;
