@@ -3,7 +3,7 @@ body {
   /* background-image: url(theme_pluie.jpg); */
   background-size: 100%;
   background-repeat: no-repeat;
-  background: linear-gradient(0deg, skyblue, white);
+  background: linear-gradient(0deg, lightblue, white);
   /*color: black;*/
   height: 100vh;
   margin: 0;
@@ -14,7 +14,7 @@ body {
 
 /* bandeau de titre */
 h1 { 
-  color: blue;
+  color: mediumblue;
   text-shadow: 1px 1px 1px white;
   border: none;
   box-shadow: none;
@@ -38,7 +38,7 @@ label { display: block; color : black; font-size : 130%;}
 label span { display: inline-block; width: 5em; height: 1.5em; }
 
 form[name=Dates] {
-  color: blue;
+  color: mediumblue;
   box-shadow: none;
   background-color: rgba(255,255,255,0.3);
   height:75%;
@@ -53,7 +53,7 @@ form[name=Dates] {
 }
 
 h2{
-  color:rgba(37,87,233);
+  color:mediumblue;
 }
 
 #reponse {

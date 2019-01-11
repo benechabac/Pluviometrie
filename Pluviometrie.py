@@ -171,7 +171,7 @@ class RequestHandler(http.server.SimpleHTTPRequestHandler):
     plt.close()
     
     body = json.dumps({
-            'title': 'Pluviométrie '+self.path_info[1], \
+            'title': '', \
             'img': '/'+fichier \
              });
 
