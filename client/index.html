@@ -50,7 +50,7 @@
 <label>2018 : <input checked type="radio" name="Date_fin" value="2018"></label>
 
 <h2>Comparer à une autre station :</h2>
-<SELECT name="Ajouter une station" size="1">
+<SELECT name="comparerStation" size="1">
 <OPTION>Ne comparer à aucune autre station
 <OPTION>JONAGE
 <OPTION>MEYZIEU
@@ -85,7 +85,7 @@
 <OPTION>GIVORS
 </SELECT>
 
-<input type="button" value="Comparer">	
+<input type="button" onclick="updateGraph(2)" value="Comparer">	
 	
 </form>
 
@@ -136,7 +136,7 @@ for (i=0; i<document.Dates.Date_fin.length; i++) {
 }
 
 // Mise à jour de la courbe en fonction du marker selectionne et de la date
-function updateGraph() {
+function updateGraph(n=1) {
     var xhr = new XMLHttpRequest();
     var image =  document.querySelector('#reponse img'),
 	legende = document.querySelector('#reponse p');
@@ -160,7 +160,13 @@ function updateGraph() {
 	image.alt = data.title;
 	legende.innerHTML = data.title;
     };
-    xhr.open('GET','/pluvio/'+marker.nom+'/'+debut+'/'+fin,true);  // on récupère la courbe par un appel au serveur
+    if(n==2) {
+	// recuperation de la 2e station
+	var station2 = document.querySelector('select[name=comparerStation]').value;
+	xhr.open('GET','/compare/'+marker.nom+'/'+station2+'/'+debut+'/'+fin,true);  // on récupère la courbe par un appel au serveur
+    } else{
+	xhr.open('GET','/pluvio/'+marker.nom+'/'+debut+'/'+fin,true);  // on récupère la courbe par un appel au serveur
+    }
     xhr.send();
 }
 
