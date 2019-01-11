@@ -55,37 +55,29 @@ form[name=Dates] {
 h2{
   color:mediumblue;
 }
-select{
-  border: 2px;
-  border-color: mediumblue
-}
 
 input[type=button]{
-  background: url(new_arrow.jpeg) no-repeat right #ddd;
-  border: 1px solid #ccc;
-  margin: 3px
+  background: rgb(113,164,261);
+  border: 5px;
+  border-color: mediumblue;
+  border-radius: 10px;
+  margin: 3px 
+  height: 30px;
+  font-size: 16px;
 }
 
 .styled-select select {
-   background: transparent;
-   width: 268px;
+   background: rgb(113,164,261);
+   width: 260px;
    padding: 5px;
    margin: 3px;
    font-size: 16px;
-   line-height: 1;
-   border: 0;
-   border-radius: 0;
-   height: 34px;
-   -webkit-appearance: none;
+   border: 5px;
+   border-radius: 8px;
+   height: 30px;
+   border: 1px;
+   border-color: mediumblue;
    }
-.styled-select {
-   width: 240px;
-   height: 34px;
-   overflow: hidden;
-   background: url(new_arrow.jpeg) no-repeat right #ddd;
-   border: 1px solid #ccc;
-   }
-
 
 #reponse {
     display: inline-block;
