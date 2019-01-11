@@ -110,6 +110,8 @@ class RequestHandler(http.server.SimpleHTTPRequestHandler):
     if len(self.path_info)>3:
         debut = int(self.path_info[2])
         fin = int(self.path_info[3])
+        if debut>fin:
+            fin = 2018
     else:
         debut = 2011
         fin = 2018
@@ -191,6 +193,8 @@ class RequestHandler(http.server.SimpleHTTPRequestHandler):
     if len(self.path_info)>4:
         debut = int(self.path_info[3])
         fin = int(self.path_info[4])
+        if debut>fin:
+            fin = 2018
     else:
         debut = 2011
         fin = 2018
