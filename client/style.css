@@ -3,7 +3,7 @@ body {
   /* background-image: url(theme_pluie.jpg); */
   background-size: 100%;
   background-repeat: no-repeat;
-  background: linear-gradient(0deg, skyblue, white);
+  background: linear-gradient(0deg, lightblue, white);
   /*color: black;*/
   height: 100vh;
   margin: 0;
