@@ -34,7 +34,7 @@ body > * {   padding-left: 10px; }
 body { font-family: Gill Sans Nova Light, sans-serif; size : 50;  }
 
 /* positionnement des champs */
-label { display: block; color : black; font-size : 90%;}
+label { display: block; color : black; font-size : 130%;}
 label span { display: inline-block; width: 5em; height: 1.5em; }
 
 form[name=Dates] {
