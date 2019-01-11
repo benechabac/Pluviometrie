@@ -123,9 +123,11 @@ function load_data () {
 }
 
 var marker; // sauvegarde du marker selectionne
+var compare = false;
 // si on clique sur un marker la courbe change
 function OnMarkerClick (e) {
     marker = e.target;
+    compare = false;
     updateGraph();
 }
 
@@ -162,9 +164,10 @@ function updateGraph(n=1) {
 	image.alt = data.title;
 	legende.innerHTML = data.title;
     };
-    if(n==2) {
+    if(n==2 || compare) {
 	// recuperation de la 2e station
 	var station2 = document.querySelector('select[name=comparerStation]').value;
+	compare = true;
 	xhr.open('GET','/compare/'+marker.nom+'/'+station2+'/'+debut+'/'+fin,true);  // on récupère la courbe par un appel au serveur
     } else{
 	xhr.open('GET','/pluvio/'+marker.nom+'/'+debut+'/'+fin,true);  // on récupère la courbe par un appel au serveur
