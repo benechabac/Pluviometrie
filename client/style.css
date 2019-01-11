@@ -3,7 +3,7 @@ body {
   /* background-image: url(theme_pluie.jpg); */
   background-size: 100%;
   background-repeat: no-repeat;
-  background: linear-gradient(0deg, silver, black);
+  background: linear-gradient(0deg, skyblue, white);
   /*color: black;*/
   height: 100vh;
   margin: 0;
@@ -34,11 +34,11 @@ body > * {   padding-left: 10px; }
 body { font-family: Georgia, sans-serif; }
 
 /* positionnement des champs */
-label { display: block; }
+label { display: block; color : black;}
 label span { display: inline-block; width: 5em; height: 1.5em; }
 
 form[name=Dates] {
-    display: inline-block;
+    display: inline-block; color : black;
 }
 #reponse {
     display: inline-block;
