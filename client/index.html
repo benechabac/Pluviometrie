@@ -41,8 +41,6 @@ Date de fin :
 <label>2017 : <input type="radio" name="Date_fin" value="2017"></label>
 <label>2018 : <input checked type="radio" name="Date_fin" value="2018"></label>
 
-<input type="submit" value ="Ok">
-
 </FORM>
 
 <div id="reponse">
@@ -78,7 +76,20 @@ function load_data () {
     xhr.send();
 }
 
+var marker;
 function OnMarkerClick (e) {
+    marker = e.target;
+    updateGraph();
+}
+
+for (i=0; i<document.Dates.Date_debut.length; i++) {
+    document.Dates.Date_debut[i].onclick = updateGraph;
+}
+for (i=0; i<document.Dates.Date_fin.length; i++) {
+    document.Dates.Date_fin[i].onclick = updateGraph;
+}
+
+function updateGraph() {
     var xhr = new XMLHttpRequest();
     var image =  document.querySelector('#reponse img'),
 	legende = document.querySelector('#reponse p');
@@ -100,9 +111,10 @@ function OnMarkerClick (e) {
 	image.alt = data.title;
 	legende.innerHTML = data.title;
     };
-    xhr.open('GET','/pluies/'+e.target.nom+'/'+debut+'/'+fin,true);  // on récupère la courbe par un appel au serveur
+    xhr.open('GET','/pluies/'+marker.nom+'/'+debut+'/'+fin,true);  // on récupère la courbe par un appel au serveur
     xhr.send();
 }
+
 </script>
 
 
