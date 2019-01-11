@@ -16,6 +16,7 @@ body {
 h1 { 
   border: none;
   box-shadow: none;
+  text-indent: 3%;
   background-color: rgba(37,87,233,0.6);
   border: 3px solid rgba(26,14,117,0.6);
   color:rgb(26,14,117);
