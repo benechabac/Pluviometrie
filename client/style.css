@@ -31,10 +31,10 @@ h1 {
 body > * {   padding-left: 10px; }
 
 /* polices de caractères */
-body { font-family: Gill Sans Nova Light, sans-serif; size : 40;  }
+body { font-family: Gill Sans Nova Light, sans-serif; size : 50;  }
 
 /* positionnement des champs */
-label { display: block; color : black;}
+label { display: block; color : black; font-size : 90%;}
 label span { display: inline-block; width: 5em; height: 1.5em; }
 
 form[name=Dates] {
