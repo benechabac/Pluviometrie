@@ -16,13 +16,10 @@
 
 <h1>Pluviométrie du Grand Lyon</h1>
 
- <!-- <label><span>Région :</span><input id="region" name="Region"> 
- <button id="bouton">Afficher la courbe</button>  </label>  -->
-
 
 <div id="map"></div>  
 
-<FORM name=Dates>
+<form name=Dates>
 Date de début : 
 <label>2011 : <input checked type="radio" name="Date_debut" value="2011"></label>
 <label>2012 : <input type="radio" name="Date_debut" value="2012"></label>
@@ -41,13 +38,11 @@ Date de fin :
 <label>2017 : <input type="radio" name="Date_fin" value="2017"></label>
 <label>2018 : <input checked type="radio" name="Date_fin" value="2018"></label>
 
-</FORM>
+</form>
 
 <div id="reponse">
   <p align="center"></p>
   <img width="68%" src="" />
-</div>
-<div>
 </div>
 
 <script>
@@ -76,12 +71,14 @@ function load_data () {
     xhr.send();
 }
 
-var marker;
+var marker; // sauvegarde du marker selectionne
+// si on clique sur un marker la courbe change
 function OnMarkerClick (e) {
     marker = e.target;
     updateGraph();
 }
 
+// si on clique sur une date la courbe change
 for (i=0; i<document.Dates.Date_debut.length; i++) {
     document.Dates.Date_debut[i].onclick = updateGraph;
 }
@@ -89,23 +86,26 @@ for (i=0; i<document.Dates.Date_fin.length; i++) {
     document.Dates.Date_fin[i].onclick = updateGraph;
 }
 
+// Mise à jour de la courbe en fonction du marker selectionne et de la date
 function updateGraph() {
     var xhr = new XMLHttpRequest();
     var image =  document.querySelector('#reponse img'),
 	legende = document.querySelector('#reponse p');
+    // recuperation de la date de debut
     var debut = '';
     for (i=0; i<document.Dates.Date_debut.length; i++) {
 	    if (document.Dates.Date_debut[i].checked) {
 		    debut = document.Dates.Date_debut[i].value;
 	    }
     }
+    // puis de la date de fin
     var fin = '';
     for (i=0; i<document.Dates.Date_fin.length; i++) {
 	    if (document.Dates.Date_fin[i].checked) {
 		    fin = document.Dates.Date_fin[i].value;
 	    }
     }
-    xhr.onload = function() {   // fonction callback
+    xhr.onload = function() {   // fonction callback pour inserer le courbe dans la page
 	var data = JSON.parse(this.responseText)
 	image.src = data.img;
 	image.alt = data.title;
