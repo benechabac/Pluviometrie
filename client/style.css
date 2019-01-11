@@ -14,13 +14,12 @@ body {
 
 /* bandeau de titre */
 h1 { 
-  color: mediumblue;
-  text-shadow: 1px 1px 1px white;
   border: none;
   box-shadow: none;
-  background-color: rgba(0,200,255,0.3);
-  border-top: 3px solid rgba(255,255,255,0.6);
-  border-bottom: 3px solid rgba(255,255,255,0.6);
+  background-color: rgba(37,87,233,0.6);
+  border: 3px solid rgba(26,14,117,0.6);
+  color:rgb(26,14,117);
+  border-radius: 8px;
   margin-top: 0.8em;
   margin-bottom: 0.8em;
   padding-top: 0.4em;
@@ -38,12 +37,11 @@ label { display: block; color : black; font-size : 130%;}
 label span { display: inline-block; width: 5em; height: 1.5em; }
 
 form[name=Dates] {
-  color: mediumblue;
   box-shadow: none;
-  overflow: auto;
   background-color: rgba(255,255,255,0.3);
   height:75%;
-  width:13%;
+  width:15%;
+  overflow: auto;
   border: 4px solid rgba(37,87,233,0.6);
   border-radius: 10px;1.33em
   margin: 0.8em;
@@ -54,21 +52,22 @@ form[name=Dates] {
 }
 
 h2{
-  color:mediumblue;
+  color:rgb(26,14,117);
 }
 
 input[type=button]{
-  background: rgb(113,164,261);
+  background: rgba(37,87,233,0.6);
   border: 5px;
-  border-color: mediumblue;
+  border-color: rgba(37,87,233,0.6);
   border-radius: 10px;
   margin: 3px 
   height: 30px;
   font-size: 16px;
+  color:rgb(26,14,117)
 }
 
 .styled-select select {
-   background: rgb(113,164,261);
+   background: rgba(37,87,233,0.6);
    width: 260px;
    padding: 5px;
    margin: 3px;
@@ -77,12 +76,13 @@ input[type=button]{
    border-radius: 8px;
    height: 30px;
    border: 1px;
-   border-color: mediumblue;
+   border-color: rgba(37,87,233,0.6);
+   color:rgb(26,14,117)
    }
 
 #reponse {
     display: inline-block;
-    width: 50%;
+    width: 45%;
 }
 #reponse img {
     width: 100%;
