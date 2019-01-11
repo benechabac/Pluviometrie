@@ -288,7 +288,7 @@ class RequestHandler(http.server.SimpleHTTPRequestHandler):
             'img': '/'+fichier \
              });
     
-    #envoie des données dans le cache
+    #envoi des données dans le cache
     c.execute("SELECT Station FROM 'Cache' WHERE Station=? AND Debut=? AND Fin=?", (self.path_info[1],debut,fin))
     station = c.fetchall()
     if len(station)==0:
