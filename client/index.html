@@ -30,6 +30,7 @@
 
 <div id="map"></div>  
 
+
 <form name=Dates>
 <h2>Date de début :</h2>
 <label>2011 : <input checked type="radio" name="Date_debut" value="2011"></label>
@@ -39,10 +40,8 @@
 <label>2015 : <input type="radio" name="Date_debut" value="2015"></label>
 <label>2016 : <input type="radio" name="Date_debut" value="2016"></label>
 <label>2017 : <input type="radio" name="Date_debut" value="2017"></label>
-<label>2018 : <input type="radio" name="Date_debut" value="2018"></label>
 
 <h2>Date de fin :</h2>
-<label>2011 : <input type="radio" name="Date_fin" value="2011"></label>
 <label>2012 : <input type="radio" name="Date_fin" value="2012"></label>
 <label>2013 : <input type="radio" name="Date_fin" value="2013"></label>
 <label>2014 : <input type="radio" name="Date_fin" value="2014"></label>
@@ -52,8 +51,9 @@
 <label>2018 : <input checked type="radio" name="Date_fin" value="2018"></label>
 
 <h2>Comparer à une autre station :</h2>
+<div class="styled-select">
 <SELECT name="Ajouter une station" size="1">
-<OPTION>Ne comparer à aucune autre station
+<OPTION>Pas de comparaison
 <OPTION>JONAGE
 <OPTION>MEYZIEU
 <OPTION>GENAS
@@ -86,6 +86,7 @@
 <OPTION>SEREZIN
 <OPTION>GIVORS
 </SELECT>
+</div>
 
 <input type="button" value="Comparer">	
 	
