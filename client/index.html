@@ -117,7 +117,7 @@ function updateGraph() {
 	image.alt = data.title;
 	legende.innerHTML = data.title;
     };
-    xhr.open('GET','/pluies/'+marker.nom+'/'+debut+'/'+fin,true);  // on récupère la courbe par un appel au serveur
+    xhr.open('GET','/pluvio/'+marker.nom+'/'+debut+'/'+fin,true);  // on récupère la courbe par un appel au serveur
     xhr.send();
 }
 

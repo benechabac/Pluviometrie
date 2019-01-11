@@ -29,9 +29,9 @@ class RequestHandler(http.server.SimpleHTTPRequestHandler):
     if self.path_info[0] == 'stations':
       self.send_stations()
       
-    # le chemin d'accès commence par /pluies
-    elif self.path_info[0] == 'pluies':
-      self.send_pluies()
+    # le chemin d'accès commence par /pluvio
+    elif self.path_info[0] == 'pluvio':
+      self.send_pluvio()
       
     # ou pas...
     else:
@@ -102,7 +102,7 @@ class RequestHandler(http.server.SimpleHTTPRequestHandler):
   #
   # On génère et on renvoie un graphique de l'historique des pluies (cf. TD1)
   #
-  def send_pluies(self):
+  def send_pluvio(self):
     if len(self.path_info)>3:
         debut = int(self.path_info[2])
         fin = int(self.path_info[3])
@@ -155,7 +155,7 @@ class RequestHandler(http.server.SimpleHTTPRequestHandler):
     plt.title('Pluviométrie '+self.path_info[1],fontsize=16)
 
     # génération des courbes dans un fichier PNG
-    fichier = 'courbes/pluies_'+self.path_info[1]+'_'+str(debut)+'_'+str(fin)+'.png'
+    fichier = 'courbes/pluvio_'+self.path_info[1]+'_'+str(debut)+'_'+str(fin)+'.png'
     plt.savefig('client/{}'.format(fichier))
     plt.close()
     
