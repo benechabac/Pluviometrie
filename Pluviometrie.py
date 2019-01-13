@@ -110,8 +110,6 @@ class RequestHandler(http.server.SimpleHTTPRequestHandler):
     if len(self.path_info)>3:
         debut = int(self.path_info[2])
         fin = int(self.path_info[3])
-        if debut>fin:
-            fin = 2018
     else:
         debut = 2011
         fin = 2018
@@ -129,61 +127,82 @@ class RequestHandler(http.server.SimpleHTTPRequestHandler):
     else:
         sid = reg[0][0] # identifiant de la station
     
-    # configuration du tracé
-    fig1 = plt.figure(figsize=(18,9))
-    ax = fig1.add_subplot(111)
-    ax.set_ylim(bottom=0,top=250)
-    ax.grid(which='major', color='#888888', linestyle='-')
-    ax.grid(which='minor',axis='x', color='#888888', linestyle=':')
-    # choix de la graduation en fonction du nombre d'annee a acfficher
-    if fin==debut:
-        ax.xaxis.set_major_locator(pltd.MonthLocator())
-    elif fin-debut==1:
-        ax.xaxis.set_major_locator(pltd.MonthLocator(range(1,13,2)))
-    elif fin-debut==2:
-        ax.xaxis.set_major_locator(pltd.MonthLocator(range(1,13,3)))
-    elif fin-debut==3:
-        ax.xaxis.set_major_locator(pltd.MonthLocator(range(1,13,4)))
-    elif fin-debut<=5:
-        ax.xaxis.set_major_locator(pltd.MonthLocator(range(1,13,6)))
-    else:
-        ax.xaxis.set_major_locator(pltd.YearLocator())
-    ax.xaxis.set_minor_locator(pltd.MonthLocator())
-    ax.xaxis.set_major_formatter(pltd.DateFormatter('%B %Y'))
-    ax.xaxis.set_tick_params(labelsize=10)
-    ax.xaxis.set_label_text("Date")
-    ax.yaxis.set_label_text("Hauteur de pluie mesurée (en mm)")
-            
-    sta = "sta-"+sid 
-    # recupération de la date (mois-annee) et de la hauteur pour cette date
-    c.execute("SELECT SUBSTR(date,4,7) AS mois,SUM(`"+sta+"`) FROM 'pluvio-histo-2018' WHERE `"+sta+"_e`!='*' GROUP BY mois")
-    r = c.fetchall()
-    # recupération de la date (colonne 1) et transformation dans le format de pyplot
-    x = [pltd.date2num(dt.date(int(a[0][3:7]),int(a[0][:2]),1)) for a in r if int(a[0][3:7])>=debut and int(a[0][3:7])<=fin]
-    # récupération de la hauteur (colonne 2)
-    y = [ ( 0.0 if a[1]=='' else float(a[1]) ) for a in r if int(a[0][3:7])>=debut and int(a[0][3:7])<=fin]
-    # trie selon date
-    x,y = zip(*sorted(zip(x, y)))
-    # tracé de la courbe
-    plt.plot(x,y,linewidth=1, linestyle='-', marker='o', color='blue', label=self.path_info[1])
+    #envoi des données dans le cache
+    c.execute("SELECT Fichier FROM 'Cache' WHERE Station=? AND Debut=? AND Fin=?", (self.path_info[1],debut,fin))
+    fichier = c.fetchall()
+    if len(fichier)==0:
         
-    # légendes
-    plt.legend(loc='lower left')
-    plt.title('Pluviométrie '+self.path_info[1],fontsize=16)
-
-    # génération des courbes dans un fichier PNG
-    fichier = 'courbes/pluvio_'+self.path_info[1]+'_'+str(debut)+'_'+str(fin)+'.png'
-    plt.savefig('client/{}'.format(fichier))
-    plt.close()
+        # configuration du tracé
+        fig1 = plt.figure(figsize=(18,9))
+        ax = fig1.add_subplot(111)
+        ax.set_ylim(bottom=0,top=250)
+        ax.grid(which='major', color='#888888', linestyle='-')
+        ax.grid(which='minor',axis='x', color='#888888', linestyle=':')
+        if fin==debut:
+            ax.xaxis.set_major_locator(pltd.MonthLocator())
+        elif fin-debut==1:
+            ax.xaxis.set_major_locator(pltd.MonthLocator(range(1,13,2)))
+        elif fin-debut==2:
+            ax.xaxis.set_major_locator(pltd.MonthLocator(range(1,13,3)))
+        elif fin-debut==3:
+            ax.xaxis.set_major_locator(pltd.MonthLocator(range(1,13,4)))
+        elif fin-debut<=5:
+            ax.xaxis.set_major_locator(pltd.MonthLocator(range(1,13,6)))
+        else:
+            ax.xaxis.set_major_locator(pltd.YearLocator())
+        ax.xaxis.set_minor_locator(pltd.MonthLocator())
+        ax.xaxis.set_major_formatter(pltd.DateFormatter('%B %Y'))
+        ax.xaxis.set_tick_params(labelsize=10)
+        ax.xaxis.set_label_text("Date")
+        ax.yaxis.set_label_text("Hauteur de pluie mesurée (en mm)")
+                
+        sta = "sta-"+sid 
+        # recupération de la date (mois-annee) et de la hauteur pour cette date
+        c.execute("SELECT SUBSTR(date,4,7) AS mois,SUM(`"+sta+"`) FROM 'pluvio-histo-2018' WHERE `"+sta+"_e`!='*' GROUP BY mois")
+        r = c.fetchall()
+        # recupération de la date (colonne 1) et transformation dans le format de pyplot
+        x = [pltd.date2num(dt.date(int(a[0][3:7]),int(a[0][:2]),1)) for a in r if int(a[0][3:7])>=debut and int(a[0][3:7])<=fin]
+        # récupération de la hauteur (colonne 2)
+        y = [ ( 0.0 if a[1]=='' else float(a[1]) ) for a in r if int(a[0][3:7])>=debut and int(a[0][3:7])<=fin]
+        # trie selon date
+        x,y = zip(*sorted(zip(x, y)))
+        # tracé de la courbe
+        plt.plot(x,y,linewidth=1, linestyle='-', marker='o', color='blue', label=self.path_info[1])
+            
+        # légendes
+        plt.legend(loc='lower left')
+        plt.title('Pluviométrie '+self.path_info[1],fontsize=16)
     
-    body = json.dumps({
-            'title': '', \
-            'img': '/'+fichier \
-             });
+        # génération des courbes dans un fichier PNG
+        fichier = 'courbes/pluvio_'+self.path_info[1]+'_'+str(debut)+'_'+str(fin)+'.png'
+        plt.savefig('client/{}'.format(fichier))
+        plt.close()
+        
+        data = {"Station" : self.path_info[1] , "Debut" : debut, "Fin" : fin, "Fichier" : fichier}
+        c.execute("""INSERT INTO Cache (Station, Debut, Fin, Fichier) VALUES(:Station, :Debut, :Fin, :Fichier) """, data)
+        conn.commit()
+        
+        body = json.dumps({
+                'title': '', \
+                'img': '/'+fichier \
+                 });
+    
+        # on envoie
+        headers = [('Content-Type','application/json')];
+        self.send(body,headers)
+        
+        
+    else :
+        
+        nom=str(fichier[0][0])
+        body = json.dumps({
+        'title': '', \
+        'img': '/'+nom \
+         });
 
-    # on envoie
-    headers = [('Content-Type','application/json')];
-    self.send(body,headers)
+        # on envoie
+        headers = [('Content-Type','application/json')];
+        self.send(body,headers)
 
 
   #
