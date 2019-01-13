@@ -306,16 +306,6 @@ class RequestHandler(http.server.SimpleHTTPRequestHandler):
             'title': '', \
             'img': '/'+fichier \
              });
-    
-    #envoi des données dans le cache
-    c.execute("SELECT Station FROM 'Cache' WHERE Station=? AND Debut=? AND Fin=?", (self.path_info[1],debut,fin))
-    station = c.fetchall()
-    if len(station)==0:
-        data = {"Station" : self.path_info[1] , "Debut" : debut, "Fin" : fin}
-        c.execute("""INSERT INTO Cache (Station, Debut, Fin) VALUES(:Station, :Debut, :Fin)""", data)
-    
-    conn.commit()
-    
 
     # on envoie
     headers = [('Content-Type','application/json')];
