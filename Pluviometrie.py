@@ -35,7 +35,7 @@ class RequestHandler(http.server.SimpleHTTPRequestHandler):
       
     # le chemin d'accès commence par /compare
     elif self.path_info[0] == 'compare':
-      self.send_compare()
+      self.send_pluvio(compare=True)
 
     # ou pas...
     else:
@@ -106,10 +106,19 @@ class RequestHandler(http.server.SimpleHTTPRequestHandler):
   #
   # On génère et on renvoie un graphique de l'historique des pluies (cf. TD1)
   #
-  def send_pluvio(self):
-    if len(self.path_info)>3:
-        debut = int(self.path_info[2])
-        fin = int(self.path_info[3])
+  def send_pluvio(self,compare=False):
+    station = self.path_info[1]
+    if compare:
+        station2 = self.path_info[2]
+        d=1
+    else:
+        station2 = ""
+        d=0
+    
+    # recuperation des dates de debut et de fin
+    if len(self.path_info)>3+d:
+        debut = int(self.path_info[2+d])
+        fin = int(self.path_info[3+d])
     else:
         debut = 2011
         fin = 2018
@@ -117,21 +126,31 @@ class RequestHandler(http.server.SimpleHTTPRequestHandler):
     conn = sqlite3.connect('pluvio.sqlite')
     c = conn.cursor()
     
-    # On teste que la station demandée existe bien
-    c.execute("SELECT identifian FROM 'stations-pluvio-2018' WHERE nom=?", (self.path_info[1],))
+    # On verifie que la station demandée existe bien
+    c.execute("SELECT identifian FROM 'stations-pluvio-2018' WHERE nom=?", (station,))
     reg = c.fetchall()
     if len(reg)==0:
         print ('Erreur nom')
         self.send_error(404)    # Station non trouvée -> erreur 404
         return None
     else:
-        sid = reg[0][0] # identifiant de la station
+        sid = int(reg[0][0]) # identifiant de la station
+
+    if compare:
+        # Si on compare deux stations on fait de même avec la 2e
+        c.execute("SELECT identifian FROM 'stations-pluvio-2018' WHERE nom=?", (station2,))
+        reg = c.fetchall()
+        if len(reg)==0:
+            print ('Erreur nom')
+            self.send_error(404)    # Station non trouvée -> erreur 404
+            return None
+        else:
+            sid2 = int(reg[0][0]) # identifiant de la station
     
-    #envoi des données dans le cache
-    c.execute("SELECT Fichier FROM 'Cache' WHERE Station=? AND Debut=? AND Fin=?", (self.path_info[1],debut,fin))
+    # On recherche les données dans le cache
+    c.execute("SELECT Fichier FROM 'Cache' WHERE Station=? AND Station2=? AND Debut=? AND Fin=?", (self.path_info[1],station2, debut,fin))
     fichier = c.fetchall()
-    if len(fichier)==0:
-        
+    if len(fichier)==0: 
         # configuration du tracé
         fig1 = plt.figure(figsize=(18,9))
         ax = fig1.add_subplot(111)
@@ -156,7 +175,7 @@ class RequestHandler(http.server.SimpleHTTPRequestHandler):
         ax.xaxis.set_label_text("Date")
         ax.yaxis.set_label_text("Hauteur de pluie mesurée (en mm)")
                 
-        sta = "sta-"+sid 
+        sta = "sta-"+str(sid) 
         # recupération de la date (mois-annee) et de la hauteur pour cette date
         c.execute("SELECT SUBSTR(date,4,7) AS mois,SUM(`"+sta+"`) FROM 'pluvio-histo-2018' WHERE `"+sta+"_e`!='*' GROUP BY mois")
         r = c.fetchall()
@@ -167,19 +186,33 @@ class RequestHandler(http.server.SimpleHTTPRequestHandler):
         # trie selon date
         x,y = zip(*sorted(zip(x, y)))
         # tracé de la courbe
-        plt.plot(x,y,linewidth=1, linestyle='-', marker='o', color='blue', label=self.path_info[1])
+        plt.plot(x,y,linewidth=1, linestyle='-', marker='o', color='blue', label=station)
+
+        if compare:
+            # idem pour la 2e station
+            sta2 = "sta-"+str(sid2) 
+            c.execute("SELECT SUBSTR(date,4,7) AS mois,SUM(`"+sta2+"`) FROM 'pluvio-histo-2018' WHERE `"+sta2+"_e`!='*' GROUP BY mois")
+            r = c.fetchall()
+            x2 = [pltd.date2num(dt.date(int(a[0][3:7]),int(a[0][:2]),1)) for a in r if int(a[0][3:7])>=debut and int(a[0][3:7])<=fin]
+            y2 = [ ( 0.0 if a[1]=='' else float(a[1]) ) for a in r if int(a[0][3:7])>=debut and int(a[0][3:7])<=fin]
+            x2,y2 = zip(*sorted(zip(x2, y2)))
+            plt.plot(x2,y2,linewidth=1, linestyle='-', marker='o', color='red', label=station2)
             
         # légendes
         plt.legend(loc='lower left')
-        plt.title('Pluviométrie '+self.path_info[1],fontsize=16)
-    
+        if compare:
+            plt.title('Pluviométrie '+station+" - "+station2,fontsize=16)
+            fichier = 'courbes/pluvio_'+station+'_'+station2+'_'+str(debut)+'_'+str(fin)+'.png'
+        else:
+            plt.title('Pluviométrie '+station,fontsize=16)
+            fichier = 'courbes/pluvio_'+station+'_'+str(debut)+'_'+str(fin)+'.png'
+
         # génération des courbes dans un fichier PNG
-        fichier = 'courbes/pluvio_'+self.path_info[1]+'_'+str(debut)+'_'+str(fin)+'.png'
         plt.savefig('client/{}'.format(fichier))
         plt.close()
         
-        data = {"Station" : self.path_info[1] , "Debut" : debut, "Fin" : fin, "Fichier" : fichier}
-        c.execute("""INSERT INTO Cache (Station, Debut, Fin, Fichier) VALUES(:Station, :Debut, :Fin, :Fichier) """, data)
+        data = {"Station" : station, "Station2": station2, "Debut" : debut, "Fin" : fin, "Fichier" : fichier}
+        c.execute("""INSERT INTO Cache (Station, Station2, Debut, Fin, Fichier) VALUES(:Station, :Station2, :Debut, :Fin, :Fichier) """, data)
         conn.commit()
         
         body = json.dumps({
@@ -192,8 +225,7 @@ class RequestHandler(http.server.SimpleHTTPRequestHandler):
         self.send(body,headers)
         
         
-    else :
-        
+    else : 
         nom=str(fichier[0][0])
         body = json.dumps({
         'title': '', \
@@ -205,113 +237,7 @@ class RequestHandler(http.server.SimpleHTTPRequestHandler):
         self.send(body,headers)
 
 
-  #
-  # On génère et on renvoie un graphique de l'historique comparer des pluies 
-  #
-  def send_compare(self):
-    if len(self.path_info)>4:
-        debut = int(self.path_info[3])
-        fin = int(self.path_info[4])
-        if debut>fin:
-            fin = 2018
-    else:
-        debut = 2011
-        fin = 2018
 
-    conn = sqlite3.connect('pluvio.sqlite')
-    c = conn.cursor()
-    
-    # On teste que la station demandée existe bien
-    c.execute("SELECT identifian FROM 'stations-pluvio-2018' WHERE nom=?", (self.path_info[1],))
-    reg = c.fetchall()
-    if len(reg)==0:
-        print ('Erreur nom')
-        self.send_error(404)    # Station non trouvée -> erreur 404
-        return None
-    else:
-        sid1 = reg[0][0] # identifiant de la station
-
-    # On teste que la station demandée existe bien pour la 2e
-    c.execute("SELECT identifian FROM 'stations-pluvio-2018' WHERE nom=?", (self.path_info[2],))
-    reg = c.fetchall()
-    if len(reg)==0:
-        print ('Erreur nom')
-        self.send_error(404)    # Station non trouvée -> erreur 404
-        return None
-    else:
-        sid2 = reg[0][0] # identifiant de la station
-
-    
-    # configuration du tracé
-    fig1 = plt.figure(figsize=(18,9))
-    ax = fig1.add_subplot(111)
-    ax.set_ylim(bottom=0,top=250)
-    ax.grid(which='major', color='#888888', linestyle='-')
-    ax.grid(which='minor',axis='x', color='#888888', linestyle=':')
-    # choix de la graduation en fonction du nombre d'annee a acfficher
-    if fin==debut:
-        ax.xaxis.set_major_locator(pltd.MonthLocator())
-    elif fin-debut==1:
-        ax.xaxis.set_major_locator(pltd.MonthLocator(range(1,13,2)))
-    elif fin-debut==2:
-        ax.xaxis.set_major_locator(pltd.MonthLocator(range(1,13,3)))
-    elif fin-debut==3:
-        ax.xaxis.set_major_locator(pltd.MonthLocator(range(1,13,4)))
-    elif fin-debut<=5:
-        ax.xaxis.set_major_locator(pltd.MonthLocator(range(1,13,6)))
-    else:
-        ax.xaxis.set_major_locator(pltd.YearLocator())
-    ax.xaxis.set_minor_locator(pltd.MonthLocator())
-    ax.xaxis.set_major_formatter(pltd.DateFormatter('%B %Y'))
-    ax.xaxis.set_tick_params(labelsize=10)
-    ax.xaxis.set_label_text("Date")
-    ax.yaxis.set_label_text("Hauteur de pluie mesurée (en mm)")
-            
-    sta1 = "sta-"+sid1
-    # recupération de la date (mois-annee) et de la hauteur pour cette date
-    c.execute("SELECT SUBSTR(date,4,7) AS mois,SUM(`"+sta1+"`) FROM 'pluvio-histo-2018' WHERE`"+sta1+"_e`!='*' GROUP BY mois")
-    r = c.fetchall()
-    # recupération de la date (colonne 1) et transformation dans le format de pyplot
-    x1 = [pltd.date2num(dt.date(int(a[0][3:7]),int(a[0][:2]),1)) for a in r if int(a[0][3:7])>=debut and int(a[0][3:7])<=fin]
-    # récupération de la hauteur (colonne 2)
-    y1 = [ ( 0.0 if a[1]=='' else float(a[1]) ) for a in r if int(a[0][3:7])>=debut and int(a[0][3:7])<=fin]
-
-    sta2 = "sta-"+sid2
-    # recupération de la date (mois-annee) et de la hauteur pour cette date
-    c.execute("SELECT SUBSTR(date,4,7) AS mois,SUM(`"+sta2+"`) FROM 'pluvio-histo-2018' WHERE `"+sta2+"_e`!='*' GROUP BY mois")
-    r = c.fetchall()
-    # recupération de la date (colonne 1) et transformation dans le format de pyplot
-    x2 = [pltd.date2num(dt.date(int(a[0][3:7]),int(a[0][:2]),1)) for a in r if int(a[0][3:7])>=debut and int(a[0][3:7])<=fin]
-    # récupération de la hauteur (colonne 2)
-    y2 = [ ( 0.0 if a[1]=='' else float(a[1]) ) for a in r if int(a[0][3:7])>=debut and int(a[0][3:7])<=fin]
-
-    # trie selon date
-    x1,y1 = zip(*sorted(zip(x1, y1)))
-    x2,y2 = zip(*sorted(zip(x2, y2)))
-
-    # tracé de la courbe
-    plt.plot(x1,y1,linewidth=1, linestyle='-', marker='o', color='blue', label=self.path_info[1])
-    plt.plot(x2,y2,linewidth=1, linestyle='-', marker='o', color='red', label=self.path_info[2])
-        
-    # légendes
-    plt.legend(loc='lower left')
-    plt.title('Pluviométrie '+self.path_info[1]+' - '+self.path_info[2],fontsize=16)
-
-    # génération des courbes dans un fichier PNG
-    fichier = 'courbes/compare_'+self.path_info[1]+'_'+self.path_info[2]+'_'+str(debut)+'_'+str(fin)+'.png'
-    plt.savefig('client/{}'.format(fichier))
-    plt.close()
-    
-    body = json.dumps({
-            'title': '', \
-            'img': '/'+fichier \
-             });
-
-    # on envoie
-    headers = [('Content-Type','application/json')];
-    self.send(body,headers)
-         
-    
   #
   # On envoie les entêtes et le corps fourni
   #
